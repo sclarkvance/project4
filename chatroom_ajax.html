@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>Chat Room</title>
+<META AUTHOR="Spalding Vance & Miku Fukuyama">
+</head>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <!-- $Id: chatroom_ajax.html,v 1.6 skon Exp $ -->
+<link rel="stylesheet" type="text/css" href="chatroom_ajax.css">
+<script type="text/javascript" src="chatroomajax.js"></script>
+<title>GNU cgicc Chatroom</title>
+</head>
+
+<body onload="javascript: pageInit()">
+<h1>Chat Room</h1>
+<hr>
+Please enter your desired username: 
+<input user="user" type="text" id=user>
+<p>
+<input type="button" onclick="javascript: makeReadOnly ();" user="submit" value="Submit" />
+</p>
+
+
+<div id = "user_response_area">
+</div>
+
+<hr>
+Enter a message: 
+<input message="message" type="text" id=message maxlength=140></td>
+
+<p>
+<input type="button" value="Submit" message="submit" onclick="javascript: getUser (); javascript: validateMessage (); javascript: AutoRefresh();"/>
+</p>
+
+
+<div id = "message_response_area">
+</div>
+
+<div id = "Messagebox">
+<div id = "boxtext">
+
+</div>
+</div>
+
+
+</body>
+						
+
+</html>
