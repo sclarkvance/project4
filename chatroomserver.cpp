@@ -28,37 +28,36 @@ int main() {
 	Fifo sendfifo(send_fifo);
 
 	while(1) {
+	recfifo.openread();
+		cout << "Open read" << endl;
 		fullChat = "";
 		cout << "Getting fifo" << endl;
 
 		/* Get a message from a client */
-		recfifo.openread();
-		cout << "Open read" << endl;
+	
     
 		fullChat = recfifo.recv();
-				recfifo.fifoclose();
+
 		cout << "Received: " << fullChat << endl;
-		
-		if (fullChat.length() > 1) {
+		sendfifo.openwrite();
+		if (fullChat.length() > 4) {
+
     
 		chatVector.push_back(fullChat);
 		
-    
+    }
 		for(int i=0; i < chatVector.size(); i++) {
 		cout << "chat vector size = " << chatVector.size() << endl;
 		cout << "i = " << i << endl;
-			sendfifo.openwrite();
-		cout << "Open write" << endl;
 			sendfifo.send(chatVector[i]);
 			cout << "Sending message " << i << endl;
 			cout << chatVector[i] << endl;
-			sendfifo.fifoclose();
+		
 		}   
-		sendfifo.openwrite();
-		sendfifo.send("<!--$END-->");
+
+sendfifo.send("<!--$END-->");
 		cout << "send end message" << endl;
 		sendfifo.fifoclose();
-
-		}
-    }
+		recfifo.fifoclose();
 }
+    }

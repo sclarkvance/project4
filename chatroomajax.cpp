@@ -21,7 +21,7 @@ using namespace cgicc; // Needed for AJAX functions.
 
 string parseMessage(string);
 
-
+ofstream logFile;
 // fifo for communication
 string receive_fifo = "CRreply";
 string send_fifo = "CRrequest";
@@ -37,45 +37,54 @@ int main() {
   // create the FIFOs for communication
   Fifo recfifo(receive_fifo);
   Fifo sendfifo(send_fifo);
+cout << "Content-Type: text/plain\n\n";
   
 
   // Call server to get results
   string user = **username;
 string message = **messagetext;
-if (message.size() > 0) {
+sendfifo.openwrite();
+if (message.length() > 1) {
   string ajaxmessage =  "&&"+user+"~~"+message;
-  sendfifo.openwrite();
   sendfifo.send(ajaxmessage);
-    sendfifo.fifoclose();
     }
-  /* Get a message from a server */
-   cout << "Content-Type: text/plain\n\n";
-	//cout << "monkey turtle\n";
-  recfifo.openread();
-  do {
- // cout << "do while started" << endl;
-  
-  results = recfifo.recv();
- // cout << "monkey\n";
-//cout << results << endl;
-finalmessage = parseMessage(results);
-
-if (finalmessage.size() > 0) {
- 
-cout<< "<h1>" << finalmessage << "</h1>" << endl;
-
+else {
+sendfifo.send(" ");
 }
-//if (results.find("<!--$END-->") != string::npos) cout << "end message received" << endl;
+  /* Get a message from a server */
+  recfifo.openread();
+
+
+  
+  results = " ";
+
+
+
+while (results.find("<!--$END-->") == string::npos) { 
+
+finalmessage = parseMessage(results);
+cout<< "<p>" << finalmessage << "</p>" << endl;
+results = recfifo.recv();
+
   }
-  while (results.find("<!--$END-->") == string::npos);
-  recfifo.fifoclose();
-//cout << "dont with do while" << endl;
-    
+
+
+recfifo.fifoclose();
+sendfifo.fifoclose();
+
 return 0;
 }
 
 
 string parseMessage(string message) {
+string original = message;
+if (message.length()<5) {
+logFile.open("/tmp/vances.log", ios::out | ios::app);
+logFile << "message too small, quitting parse" << endl;
+logFile.close();
+message = "";
+ return message;
+}
 	string user;
 const string userDelineator = "&&";
  const string messageDelineator = "~~";
@@ -92,11 +101,18 @@ const string userDelineator = "&&";
      messagePos = message.find_first_of(messageDelineator, messagePos+1); 
      }
 	 if(message.find("<!--$END-->") == string::npos) {
+
       message = user + ": " + message;	
+logFile.open("/tmp/vances.log", ios::out | ios::app);
+logFile << "Parsed message" << message << endl;
+logFile.close();
 	  return message;
 	 }
 	 else {
-		 message = "";
-		 return message;
+logFile.open("/tmp/vances.log", ios::out | ios::app);
+logFile << "received end message: " << original << endl;
+logFile.close();
+		 return original;
 	 }
 }
+
