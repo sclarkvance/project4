@@ -61,11 +61,17 @@ sendfifo.send(" ");
 
 
 while (results.find("<!--$END-->") == string::npos) { 
-
+if(results.length()>4) {
+logFile.open("/tmp/vances.log", ios::out | ios::app);
+logFile << "results: " << results << endl;
+logFile.close();
 finalmessage = parseMessage(results);
+logFile.open("/tmp/vances.log", ios::out | ios::app);
+logFile << "final message: " << finalmessage << endl;
+logFile.close();
 cout<< "<p>" << finalmessage << "</p>" << endl;
+}
 results = recfifo.recv();
-
   }
 
 
@@ -80,7 +86,7 @@ string parseMessage(string message) {
 string original = message;
 if (message.length()<5) {
 logFile.open("/tmp/vances.log", ios::out | ios::app);
-logFile << "message too small, quitting parse" << endl;
+logFile << "message:" << message << " too small, quitting parse" << endl;
 logFile.close();
 message = "";
  return message;
@@ -101,7 +107,6 @@ const string userDelineator = "&&";
      messagePos = message.find_first_of(messageDelineator, messagePos+1); 
      }
 	 if(message.find("<!--$END-->") == string::npos) {
-
       message = user + ": " + message;	
 logFile.open("/tmp/vances.log", ios::out | ios::app);
 logFile << "Parsed message" << message << endl;
